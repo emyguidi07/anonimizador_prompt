@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Anonimizador de Texto</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 50px 20px;
+            margin: 0;
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 30px 40px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            width: 650px;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2 {
+            color: #1e3a8a;
+            text-align: center;
+        }
+
+        p {
+            color: #374151;
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        .info-box {
+            background-color: #eff6ff;
+            border-left: 5px solid #3b82f6;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            color: #1f2937;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            padding: 12px;
+            resize: none;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 20px;
+            background-color: #2563eb;
+            border: none;
+            color: white;
+            font-size: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        button:hover { background-color: #1d4ed8; }
+
+        pre {
+            background-color: #f1f5f9;
+            padding: 12px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-size: 14px;
+            color: #111827;
+        }
+
+        .section-title {
+            margin-top: 25px;
+            color: #1e40af;
+            font-size: 18px;
+            border-bottom: 2px solid #3b82f6;
+            display: inline-block;
+            padding-bottom: 3px;
+        }
+        ul.benefits{
+            margin:0;
+            padding:0;
+            list-style:none;
+            display:grid;
+            gap:12px;
+        }
+        ul.benefits li{
+            display:flex;
+            gap:12px;
+            align-items:flex-start;
+            background:rgba(11,132,255,0.04);
+            padding:12px;
+            border-radius:8px;
+        }
+        .emoji{
+            font-size:22px;
+            line-height:1;
+            width:36px;
+            height:36px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            border-radius:8px;
+            background:rgba(0,0,0,0.03);
+        }
+        .anon {
+            font-weight: bold;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        /* Cores únicas para cada tipo */
+        .anon.nome       { background-color: #9333ea; } 
+        .anon.cpf        { background-color: #16a34a; } 
+        .anon.rg         { background-color: #15803d; } 
+        .anon.cnpj       { background-color: #0ea5e9; } 
+        .anon.telefone   { background-color: #dc2626; } 
+        .anon.email      { background-color: #f97316; } 
+        .anon.data       { background-color: #eab308; } 
+        .anon.endereco   { background-color: #2563eb; }
+        .anon.org        { background-color: #7c3aed; } 
+        .anon.loc        { background-color: #059669; } 
+        .anon.ip         { background-color: #ff53c0; }
+        .anon.bancario   { background-color: #164c59; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Anonimizador de Texto</h1>
+
+        <div class="info-box">
+            <h2>O que é um <strong>Prompt?</strong></h2>
+            <p>Um <strong>prompt</strong> é o texto ou instrução que você fornece a um sistema de inteligência artificial para gerar uma resposta. 
+            Ele representa o ponto de partida da interação, permitindo que o sistema compreenda o contexto e realize tarefas como tradução, 
+            resumo, análise, etc.</strong>.</p>
+        </div>
+
+        <div class="info-box">
+            <h2>Por que Anonimizar Dados no Prompt?</h2>
+            <p class="lead">
+                A anonimização protege a privacidade do usuário substituindo ou removendo dados identificáveis antes que o texto seja enviado ao sistema.
+            </p>
+
+            <ul class="benefits">
+            <li>
+                <div class="emoji" aria-hidden>🛡️</div>
+                <div>
+                <strong>Proteção de dados pessoais:</strong>
+                impede que informações únicas de uma pessoa sejam reveladas ou associadas a ela.
+                </div>
+            </li>
+
+            <li>
+                <div class="emoji" aria-hidden>🔏</div>
+                <div>
+                <strong>Conformidade legal:</strong>
+                ajuda a cumprir leis como a <em>LGPD</em> (Lei Geral de Proteção de Dados) no Brasil.
+                </div>
+            </li>
+
+            <li>
+                <div class="emoji" aria-hidden>⚙️</div>
+                <div>
+                <strong>Segurança em testes e integrações:</strong>
+                garante que os dados usados em demonstrações, análises ou treinamentos não comprometam a identidade real dos usuários.
+                </div>
+            </li>
+
+            <li>
+                <div class="emoji" aria-hidden>🤖</div>
+                <div>
+                <strong>Uso ético da IA:</strong>
+                evita que modelos de IA armazenem ou reproduzam informações privadas de maneira indevida.
+                </div>
+            </li>
+            </ul>
+
+            <p>
+                Em suma, anonimizar o texto do prompt é uma boa prática de segurança digital, que reforça a confiança, a ética e o respeito à privacidade dos usuários em qualquer interação com chatbots.
+            </p>
+        </div>
+
+        <form method="POST">
+            <label for="prompt">Digite o texto a ser anonimizado:</label>
+            <textarea id="prompt" name="prompt" placeholder="Exemplo: Trabalho na Google e meu CPF é 123.456.789-00"></textarea>
+            <button type="submit">Anonimizar Texto</button>
+        </form>
+
+        {% if original %}
+            <h3 class="section-title">Texto Original:</h3>
+            <pre>{{ original }}</pre>
+            <h3 class="section-title">Texto Anonimizado:</h3>
+            <pre>{{ anonimizado|safe }}</pre>
+        {% endif %}
+    </div>
+</body>
+</html>
