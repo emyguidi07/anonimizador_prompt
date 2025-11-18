@@ -89,8 +89,7 @@ def find_regex_spans(text):
 
     return spans
 
-
-def anonimizar_texto(texto):
+def anonimizar_texto(texto, lei):
     doc = nlp(texto)
     spans = []
     for ent in doc.ents:
@@ -112,20 +111,36 @@ def anonimizar_texto(texto):
 
     spans_sorted = sorted(spans, key=lambda x: x[0], reverse=True)
 
-    explicacoes = {
-        "[NOME]": "Identifica diretamente uma pessoa natural — dado pessoal (art. 5º, I, LGPD).",
-        "[CPF]": "Número de identificação individual — dado pessoal sensível e identificador único.",
-        "[RG]": "Documento de identificação — dado pessoal sensível (identificador oficial).",
-        "[CNPJ]": "Identifica pessoa jurídica — não é dado pessoal, exceto se vinculado a um empresário individual.",
-        "[TELEFONE]": "Permite contato direto com o titular — dado pessoal (informação de contato).",
-        "[EMAIL]": "Identifica e possibilita contato digital com o titular — dado pessoal (identificador digital).",
-        "[DATA]": "Pode revelar idade ou informações sobre o titular — dado pessoal (informação biográfica).",
-        "[ENDEREÇO]": "Permite localização física do titular — dado pessoal (dado de localização).",
-        "[ORG]": "Identifica uma organização associada ao titular — dado pessoal indireto.",
-        "[LOC]": "Revela local ou região associada ao titular — dado pessoal indireto.",
-        "[IP]": "Identifica dispositivos e localização aproximada — dado pessoal.",
-        "[DADO_BANCARIO]": "Inclui informações financeiras como conta, agência, cartão ou chave PIX — dado pessoal de alto risco (não sensível pela LGPD, mas requer proteção reforçada).",
-    }
+    if lei == 'lgpd':
+        explicacoes = {
+            "[NOME]": "Identifica diretamente uma pessoa natural — dado pessoal (art. 5º, I, LGPD).",
+            "[CPF]": "Número de identificação individual — dado pessoal sensível e identificador único.",
+            "[RG]": "Documento de identificação — dado pessoal sensível (identificador oficial).",
+            "[CNPJ]": "Identifica pessoa jurídica — não é dado pessoal, exceto se vinculado a um empresário individual.",
+            "[TELEFONE]": "Permite contato direto com o titular — dado pessoal (informação de contato).",
+            "[EMAIL]": "Identifica e possibilita contato digital com o titular — dado pessoal (identificador digital).",
+            "[DATA]": "Pode revelar idade ou informações sobre o titular — dado pessoal (informação biográfica).",
+            "[ENDEREÇO]": "Permite localização física do titular — dado pessoal (dado de localização).",
+            "[ORG]": "Identifica uma organização associada ao titular — dado pessoal indireto.",
+            "[LOC]": "Revela local ou região associada ao titular — dado pessoal indireto.",
+            "[IP]": "Identifica dispositivos e localização aproximada — dado pessoal.",
+            "[DADO_BANCARIO]": "Inclui informações financeiras como conta, agência, cartão ou chave PIX — dado pessoal de alto risco (não sensível pela LGPD, mas requer proteção reforçada).",
+        }
+    else:
+        explicacoes = {
+        "[NOME]": "Personal data: identifica diretamente uma pessoa natural (GDPR Art. 4(1)).",
+        "[CPF]": "Identificador único equivalente a 'national identification number'. Sob a GDPR, é dado pessoal de alto risco que exige proteção reforçada.",
+        "[RG]": "Identificador oficial nacional — considerado 'unique identifier' pela GDPR, exigindo medidas adicionais (GDPR Art. 87).",
+        "[CNPJ]": "Identifica pessoa jurídica — não é personal data sob a GDPR, exceto se associado a empresário individual (identifiable natural person).",
+        "[TELEFONE]": "Informação de contato que identifica ou pode identificar um titular — personal data (GDPR Art. 4(1)).",
+        "[EMAIL]": "Identificador digital direto — personal data sob a GDPR, mesmo quando corporativo.",
+        "[DATA]": "Informação biográfica que pode identificar o titular ou revelar idade — personal data.",
+        "[ENDEREÇO]": "Localização física que identifica ou pode identificar uma pessoa — personal data, com risco aumentado (Recital 30).",
+        "[ORG]": "Associação organizacional pode identificar indiretamente o titular — personal data caso possibilite identificação.",
+        "[LOC]": "Dado de geolocalização ou referência territorial — personal data (Recital 30).",
+        "[IP]": "Endereço IP é personal data sob a GDPR (Recital 30) pois identifica dispositivos do titular.",
+        "[DADO_BANCARIO]": "Financial personal data — não é 'special category', mas possui alto risco e exige salvaguardas reforçadas (GDPR Art. 32).",
+        }
 
     texto_anon = texto
     for start, end, label in spans_sorted:
