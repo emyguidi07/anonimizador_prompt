@@ -220,6 +220,9 @@
     <div class="container">
         <h1>🔒 Anonimizador de Texto</h1>
 
+        {% if contador %}
+            <p>{{ contador }} acessos ao anonimizador</p>
+        {% endif %}
         <form method="POST">
             <label for="lei">Selecione a legislação:</label>
             <select id="lei" name="lei">
