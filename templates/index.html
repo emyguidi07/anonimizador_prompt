@@ -2,6 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <title>Anonimizador de Texto</title>
     <style>
         body {
@@ -159,6 +160,71 @@
         .anon.loc        { background-color: #059669; } 
         .anon.ip         { background-color: #ff53c0; }
         .anon.bancario   { background-color: #164c59; }
+        /* RESPONSIVO PARA CELULAR */
+    @media (max-width: 768px) {
+
+        body {
+            flex-direction: column;   /* Containers um abaixo do outro */
+            align-items: center;      /* Centraliza no mobile */
+        }
+
+        .container {
+            width: 90% !important;  /* Ocupa quase toda a largura (antes era 650px) */
+            height: auto;           /* Remove altura fixa */
+            padding: 1.2rem;
+            margin: 0.7rem 0;
+        }
+
+        textarea {
+            width: 100%;            /* Ajusta textarea ao container */
+            height: 130px;          /* Um pouco menor para mobile */
+        }
+
+        .info-box {
+            padding: 12px 12px;
+        }
+
+        h1, h2 {
+            font-size: 1.2rem;
+        }
+
+        .benefits {
+            grid-template-columns: 1fr;  /* Força 1 item por linha */
+        }
+
+        .emoji {
+            font-size: 20px;
+            width: 32px;
+            height: 32px;
+        }
+
+    }
+    .footer {
+        background-color: #111;
+        color: #fff;
+        padding: 15px 0;
+    }
+
+    .footer-content {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between; 
+        align-items: center;            
+        padding: 0 20px;
+    }
+
+    .footer .social-icons a {
+        color: white;
+        margin-left: 15px;
+        font-size: 26px;
+        transition: 0.3s;
+    }
+
+    .footer .social-icons a:hover {
+        color: #ff4081;
+    }
+
     </style>
 </head>
 <body>
@@ -383,6 +449,15 @@
         </p>
     </div>
 </div>
-
+<footer class="footer">
+    <div class="social-icons">
+        <a href="https://github.com/emyguidi07/anonimizador_prompt" target="_blank">
+            <i class="fab fa-github"></i>
+        </a>
+        <a href="https://www.instagram.com/pd_protect_data?igsh=MTB6M3QzaGUzejQxcg==" target="_blank">
+            <i class="fab fa-instagram"></i>
+        </a>
+    </div>
+</footer>
 </body>
 </html>
