@@ -1,34 +1,115 @@
-from flask import Flask, render_template, request,session
+from flask import Flask, render_template, request, session
 from anonimizador import anonimizar_texto
 
-import requests
-import os
 import json
+import os
 from datetime import timedelta
+import threading
+import tempfile
 
 app = Flask(__name__)
 app.secret_key = "qualquercoisa"
 app.permanent_session_lifetime = timedelta(days=365)
 
-contador_total = 0
+# Caminho absoluto dentro da pasta do app (evita problemas de cwd)
+ARQUIVO_CONTADOR = os.path.join(app.root_path, "contador.json")
+
+# Lock para evitar corrupção se várias threads acessarem ao mesmo tempo
+_contador_lock = threading.Lock()
+
+
+def carregar_contador():
+    """Carrega o contador do arquivo JSON. Se não existir, cria com zero."""
+    with _contador_lock:
+        if not os.path.exists(ARQUIVO_CONTADOR):
+            print(f"[contador] arquivo não encontrado. Criando: {ARQUIVO_CONTADOR}")
+            try:
+                with open(ARQUIVO_CONTADOR, "w", encoding="utf-8") as f:
+                    json.dump({"visitas": 0}, f)
+            except Exception as e:
+                print(f"[contador] erro ao criar arquivo: {e}")
+                raise
+
+        try:
+            with open(ARQUIVO_CONTADOR, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            visitas = int(data.get("visitas", 0))
+        except (json.JSONDecodeError, ValueError) as e:
+            # Se arquivo estiver corrompido, reseta para 0
+            print(f"[contador] JSON inválido em {ARQUIVO_CONTADOR}: {e}. Resetando para 0.")
+            visitas = 0
+            salvar_contador(visitas)
+        except Exception as e:
+            print(f"[contador] erro ao ler arquivo: {e}")
+            visitas = 0
+
+        print(f"[contador] carregar_contador -> {visitas}")
+        return visitas
+
+
+def salvar_contador(valor):
+    """Salva o contador no arquivo JSON de forma atômica."""
+    with _contador_lock:
+        tmp_fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(ARQUIVO_CONTADOR))
+        try:
+            with os.fdopen(tmp_fd, "w", encoding="utf-8") as tmpf:
+                json.dump({"visitas": int(valor)}, tmpf)
+                tmpf.flush()
+                os.fsync(tmpf.fileno())
+            # substitui atomically o arquivo antigo
+            os.replace(tmp_path, ARQUIVO_CONTADOR)
+            print(f"[contador] salvo -> {valor}")
+        except Exception as e:
+            # tenta limpar o temp se der ruim
+            print(f"[contador] erro ao salvar contador: {e}")
+            try:
+                if os.path.exists(tmp_path):
+                    os.remove(tmp_path)
+            except Exception:
+                pass
+            raise
+
+
+# carrega contador ao iniciar servidor
+contador_total = carregar_contador()
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-
     global contador_total
-    if not session.get("contou"):
-        contador_total += 1
-        session["contou"] = True
 
+    # Garante que um visitante conte apenas uma vez por sessão (1 ano)
+    if not session.get("contou"):
+        try:
+            contador_total += 1
+            session["contou"] = True
+            salvar_contador(contador_total)   # grava permanentemente
+        except Exception as e:
+            print(f"[contador] falha ao incrementar/salvar: {e}")
 
     if request.method == "POST":
         lei = request.form.get("lei")
         texto = request.form.get("prompt", "")
+
         if not lei:
-            return render_template("index.html", original=None, erro="Selecione uma legislação antes de continuar.", contador=contador_total)
+            return render_template(
+                "index.html",
+                original=None,
+                erro="Selecione uma legislação antes de continuar.",
+                contador=contador_total
+            )
+
         texto_anon = anonimizar_texto(texto, lei)
-        return render_template("index.html", original=texto, anonimizado=texto_anon, contador=contador_total)
+
+        return render_template(
+            "index.html",
+            original=texto,
+            anonimizado=texto_anon,
+            contador=contador_total
+        )
+
     return render_template("index.html", original=None, contador=contador_total)
 
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
