@@ -42,6 +42,9 @@ def find_regex_spans(text):
         r"\b(?:Rua|R\.|Avenida|Av\.|Av|Travessa|Alameda|Rodovia|Estrada)\s+[A-ZÁÉÍÓÚÃÕÂÊÔ0-9a-záéíóúãõâêô\.\- ]+(?:,\s*\d+)?\b",
         text, flags=re.IGNORECASE):
         add_span_if_free(spans, m.start(), m.end(), "[ENDEREÇO]")
+    # CEP
+    for m in re.finditer(r"\b\d{5}-?\d{3}\b", text):
+        add_span_if_free(spans, m.start(), m.end(), "[LOC]")
     # Nome pessoal
     for m in re.finditer(
         r"\b([A-ZÁÉÍÓÚÃÕÂÊÔ][a-záéíóúãõâêô]+(?:\s+(?:da|de|do|dos|das))?\s+[A-ZÁÉÍÓÚÃÕÂÊÔ][a-záéíóúãõâêô]+)\b",
@@ -58,7 +61,7 @@ def find_regex_spans(text):
     # IPv6
     for m in re.finditer(r"\b([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}\b", text):
         add_span_if_free(spans, m.start(), m.end(), "[IP]")
-
+    
     # ==== NOVO BLOCO: Dados Bancários ====
     # 1) Detecção de "termina em/termina com 4321" (últimos 3-4 dígitos de cartão)
     for m in re.finditer(r"\b(?:termina(?:m)?\s+(?:em|com))\s+(\d{3,4})\b", text, flags=re.IGNORECASE):
@@ -98,7 +101,7 @@ def anonimizar_texto(texto, lei):
             label = "[NOME]"
         elif ent.label_ in ("ORG",):
             label = "[ORG]"
-        elif ent.label_ in ("GPE", "LOC"):
+        elif ent.label_ in ("GPE", "LOC") and len(ent.text) > 2:
             label = "[LOC]"
         elif ent.label_ == "DATE":
             label = "[DATA]"
