@@ -30,10 +30,13 @@ bin_headers = {
 }
 
 def carregar_contador():
-    get_response = requests.get(JSONBIN_URL, headers=bin_headers)
-    data = get_response.json()
-    counter = data["record"].get("contador", 0)
-    return counter
+    try:
+        get_response = requests.get(JSONBIN_URL, headers=bin_headers)
+        data = get_response.json()
+        counter = data["record"].get("contador", 0)
+        return counter
+    except Exception as e:
+        return 0
 
     return
     """Carrega o contador do arquivo JSON. Se não existir, cria com zero."""
@@ -65,23 +68,17 @@ def carregar_contador():
 
 
 def salvar_contador(valor):
-    BIN_ID = os.getenv('BIN_ID')
-    BIN_KEY = os.getenv('BIN_KEY')
-        
-    JSONBIN_URL = f"https://api.jsonbin.io/v3/b/{BIN_ID}"
-
-    bin_headers = {
-        "X-Master-Key": BIN_KEY,
-        "Content-Type": "application/json"
-    }
-    update_response = requests.put(
-        JSONBIN_URL,
-        headers=bin_headers,
-        json={"contador": valor}
-    )
-    data = update_response.json()
-    counter = data["record"].get("contador", 0)
-    return counter
+    try:
+        update_response = requests.put(
+            JSONBIN_URL,
+            headers=bin_headers,
+            json={"contador": valor}
+        )
+        data = update_response.json()
+        counter = data["record"].get("contador", 0)
+        return counter
+    except Exception as e:
+        return 0
     return
     """Salva o contador no arquivo JSON de forma atômica."""
     with _contador_lock:
