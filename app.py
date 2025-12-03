@@ -1,8 +1,12 @@
 from flask import Flask, render_template, request, session
 from anonimizador import anonimizar_texto
 
+import requests
 import json
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from datetime import timedelta
 import threading
 import tempfile
@@ -17,8 +21,21 @@ ARQUIVO_CONTADOR = os.path.join(app.root_path, "contador.json")
 # Lock para evitar corrupção se várias threads acessarem ao mesmo tempo
 _contador_lock = threading.Lock()
 
+BIN_ID = os.getenv('BIN_ID')
+BIN_KEY = os.getenv('BIN_KEY')    
+JSONBIN_URL = f"https://api.jsonbin.io/v3/b/{BIN_ID}"
+bin_headers = {
+    "X-Master-Key": BIN_KEY,
+    "Content-Type": "application/json"
+}
 
 def carregar_contador():
+    get_response = requests.get(JSONBIN_URL, headers=bin_headers)
+    data = get_response.json()
+    counter = data["record"].get("contador", 0)
+    return counter
+
+    return
     """Carrega o contador do arquivo JSON. Se não existir, cria com zero."""
     with _contador_lock:
         if not os.path.exists(ARQUIVO_CONTADOR):
@@ -48,6 +65,24 @@ def carregar_contador():
 
 
 def salvar_contador(valor):
+    BIN_ID = os.getenv('BIN_ID')
+    BIN_KEY = os.getenv('BIN_KEY')
+        
+    JSONBIN_URL = f"https://api.jsonbin.io/v3/b/{BIN_ID}"
+
+    bin_headers = {
+        "X-Master-Key": BIN_KEY,
+        "Content-Type": "application/json"
+    }
+    update_response = requests.put(
+        JSONBIN_URL,
+        headers=bin_headers,
+        json={"contador": valor}
+    )
+    data = update_response.json()
+    counter = data["record"].get("contador", 0)
+    return counter
+    return
     """Salva o contador no arquivo JSON de forma atômica."""
     with _contador_lock:
         tmp_fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(ARQUIVO_CONTADOR))
@@ -79,13 +114,17 @@ def index():
     global contador_total
 
     # Garante que um visitante conte apenas uma vez por sessão (1 ano)
-    if not session.get("contou"):
-        try:
-            contador_total += 1
-            session["contou"] = True
-            salvar_contador(contador_total)   # grava permanentemente
-        except Exception as e:
-            print(f"[contador] falha ao incrementar/salvar: {e}")
+    #if not session.get("contou"):
+    #    try:
+    #        contador_total += 1
+    #        session["contou"] = True
+    #        salvar_contador(contador_total)   # grava permanentemente
+    #    except Exception as e:
+    #        print(f"[contador] falha ao incrementar/salvar: {e}")
+
+    #Contador pelo bin.io
+    salvar_contador(contador_total+1)
+
 
     if request.method == "POST":
         lei = request.form.get("lei")
