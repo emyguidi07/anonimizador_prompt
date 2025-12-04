@@ -107,7 +107,7 @@ def salvar_contador(valor):
 @app.route("/", methods=["GET", "POST"])
 def index():
     # carrega contador ao renderizar site
-    contador_total = carregar_contador()
+    contador_total = carregar_contador() + 1
 
     # Garante que um visitante conte apenas uma vez por sessão (1 ano)
     #if not session.get("contou"):
@@ -119,7 +119,7 @@ def index():
     #        print(f"[contador] falha ao incrementar/salvar: {e}")
 
     #Contador pelo bin.io
-    salvar_contador(contador_total+1)
+    salvar_contador(contador_total)
 
 
     if request.method == "POST":
