@@ -118,8 +118,6 @@ def index():
     #    except Exception as e:
     #        print(f"[contador] falha ao incrementar/salvar: {e}")
 
-    #Contador pelo bin.io
-    salvar_contador(contador_total)
 
 
     if request.method == "POST":
@@ -143,6 +141,8 @@ def index():
             contador=contador_total
         )
 
+    #Contador pelo bin.io para o primeiro acesso
+    salvar_contador(contador_total)
     return render_template("index.html", original=None, contador=contador_total)
 
 
