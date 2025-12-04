@@ -66,6 +66,8 @@ def carregar_contador():
         print(f"[contador] carregar_contador -> {visitas}")
         return visitas
 
+
+
 def salvar_contador(valor):
     try:
         update_response = requests.put(
@@ -101,13 +103,11 @@ def salvar_contador(valor):
             raise
 
 
-# carrega contador ao iniciar servidor
-contador_total = carregar_contador()
-
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    global contador_total
+    # carrega contador ao renderizar site
+    contador_total = carregar_contador()
 
     # Garante que um visitante conte apenas uma vez por sessão (1 ano)
     #if not session.get("contou"):
