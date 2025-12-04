@@ -119,12 +119,15 @@ def index():
     #        print(f"[contador] falha ao incrementar/salvar: {e}")
 
 
-
+    if request.method == 'GET': 
+        #Contador pelo bin.io para o primeiro acesso
+        salvar_contador(contador_total)
+    
     if request.method == "POST":
         lei = request.form.get("lei")
         texto = request.form.get("prompt", "")
 
-        if not lei:
+        if not lei: 
             return render_template(
                 "index.html",
                 original=None,
@@ -141,8 +144,6 @@ def index():
             contador=contador_total
         )
 
-    #Contador pelo bin.io para o primeiro acesso
-    salvar_contador(contador_total)
     return render_template("index.html", original=None, contador=contador_total)
 
 
