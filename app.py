@@ -66,7 +66,6 @@ def carregar_contador():
         print(f"[contador] carregar_contador -> {visitas}")
         return visitas
 
-
 def salvar_contador(valor):
     try:
         update_response = requests.put(
